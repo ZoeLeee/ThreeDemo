@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="webgl"></div>
+  <script>
+    //https://cdn.jsdelivr.net/gh/ZoeLeee/cdn/sky/bk.jpg
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/104/three.min.js"></script>
+  <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    var scene, camera, renderer;
+    var container
+
+    init();
+    animate();
+
+    // FUNCTIONS
+    function init() {
+      // SCENE
+      scene = new THREE.Scene();
+      // CAMERA
+      var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+      var VIEW_ANGLE = 45, ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT, NEAR = 0.1, FAR = 20000;
+      camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
+      camera.position.set(0, 150, 1000);
+      camera.lookAt(scene.position);
+
+      scene.add(camera);
+
+      // RENDERER
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+      container = document.getElementById('webgl');
+      container.appendChild(renderer.domElement);
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      // LIGHT
+      var light = new THREE.PointLight(0xffffff);
+      light.position.set(0, 250, 0);
+      scene.add(light);
+      // FLOOR
+      var path = "https://cdn.jsdelivr.net/gh/ZoeLeee/cdn/sky/";//设置路径
+      var directions = ["lf.jpg", "rt.jpg", "up.jpg", "dn.jpg", "fr.jpg", "bk.jpg"];//获取对象
+      scene.background = new THREE.CubeTextureLoader()
+        .setPath(path)
+        .load(directions);
+
+      let geometry = new THREE.BoxGeometry(100, 100, 100);
+      var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      var cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      render();
+      update();
+    }
+
+    function update() {
+      controls.update();
+    }
+
+    function render() {
+      renderer.render(scene, camera);
+    }
+
+  </script>
+</body>
+
+</html>
