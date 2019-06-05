@@ -1,4 +1,11 @@
-let renderer, camera, scene, gui, light, stats, controls, meshHelper, mixer, action, datGui;
+let renderer,scene, light,meshHelper, mixer, action,control,helper;
+
+let activeCamera,perspectiveCamera,orthographicCamera;
+
+let helperPers,helperOrth,activeHelper;
+
+let sceenWidth=window.innerWidth;
+let sceenHeight=window.innerHeight;
 
 function initRender() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -10,17 +17,35 @@ function initRender() {
     document.getElementById('app').appendChild(renderer.domElement);
 }
 
-function initCamera() {
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
-    camera.position.set(100, 200, 300);
-}
-
 function initSceen() {
     scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xa0a0a0, 200, 1000);
-    scene.background = new THREE.CubeTextureLoader().setPath("https://cdn.jsdelivr.net/gh/ZoeLeee/cdn/sky/").load([
-        "lf.jpg", "rt.jpg", "up.jpg", "dn.jpg", "fr.jpg", "bk.jpg"
-    ])
+    window["scene"]=scene;
+    // scene.fog = new THREE.Fog(0xa0a0a0, 200, 1000);
+    // scene.background = new THREE.CubeTextureLoader().setPath("https://cdn.jsdelivr.net/gh/ZoeLeee/cdn/sky/").load([
+    //     "lf.jpg", "rt.jpg", "up.jpg", "dn.jpg", "fr.jpg", "bk.jpg"
+    // ])
+}
+function initCamera() {
+    //透视相机
+    perspectiveCamera = new THREE.PerspectiveCamera(45,sceenWidth / sceenHeight, 0.1, 2000);
+    perspectiveCamera.position.set(0,0,1000);
+    //正交相机
+    orthographicCamera = new THREE.OrthographicCamera( sceenWidth / - 2, sceenWidth / 2, sceenHeight / 2, sceenHeight / - 2, 0.1, 2000 );
+
+    orthographicCamera.position.set(0,0,1000);
+
+
+    //相机助手
+    helperPers = new THREE.CameraHelper( perspectiveCamera );
+    scene.add( helperPers );
+    helperOrth = new THREE.CameraHelper( orthographicCamera );
+    scene.add( helperOrth );
+
+    //
+    activeCamera = perspectiveCamera;
+    activeHelper = helperPers;
+    helperOrth.visible=false;
+
 }
 function initLight() {
     scene.add(new THREE.AmbientLight(0x444444));
@@ -59,11 +84,9 @@ function loadModel() {
     //加载模型
     var loader = new THREE.FBXLoader();
     loader.load("../assets/fbx/Naruto.fbx", function (mesh) {
-        console.log(mesh);
-
         //添加骨骼辅助
-        meshHelper = new THREE.SkeletonHelper(mesh);
-        scene.add(meshHelper);
+        // meshHelper = new THREE.SkeletonHelper(mesh);
+        // scene.add(meshHelper);
 
         //设置模型的每个部位都可以投影
         mesh.traverse(function (child) {
@@ -90,6 +113,7 @@ function loadModel() {
 
         function createAction(i) {
             actions[i] = mixer.clipAction(mesh.animations[i]);
+            // action[i].play();
         }
 
         mesh.position.y += 100;
@@ -100,23 +124,57 @@ function loadModel() {
 }
 //窗口变动触发的函数
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    sceenWidth=window.innerWidth;
+    sceenHeight=window.innerHeight;
+
+    perspectiveCamera.aspect = sceenWidth / sceenHeight;
+    perspectiveCamera.updateProjectionMatrix();
+    orthographicCamera = new THREE.OrthographicCamera( sceenWidth / - 2, sceenWidth / 2, sceenHeight / 2, sceenHeight / - 2, 0.1, 2000 );
+
+    orthographicCamera.left=sceenWidth / - 2;
+    orthographicCamera.right=sceenWidth /  2;
+    orthographicCamera.top=sceenHeight /  2;
+    orthographicCamera.bottom=sceenHeight / - 2;
+
+    renderer.setSize(sceenWidth,  sceenHeight);
 }
 function animate() {
-    renderer.render(scene, camera);
+    renderer.render(scene, activeCamera);
     requestAnimationFrame(animate);
 }
-
-
+function tabCamera(){
+    if(activeCamera===orthographicCamera){
+        activeCamera=perspectiveCamera;
+        helperPers.visible=true;
+        helperOrth.visible=false;
+    }
+    else{
+        activeCamera=orthographicCamera;
+        helperPers.visible=false;
+        helperOrth.visible=true;
+    }
+    control.Camera=activeCamera;
+}
 function init() {
     initRender();
-    initCamera();
     initSceen();
+    initCamera();
+    control=new CameraControl(activeCamera);
     initLight();
-    loadModel();
+    let geo=new THREE.BoxGeometry(10,10,10);
+    let mesh=new THREE.Mesh(geo);
+    scene.add(mesh);
+    // loadModel();
+    document.addEventListener('keydown',e=>{
+        if(e.code==="Tab"){
+            e.preventDefault();
+            tabCamera();
+        }
+    })
     window.addEventListener('resize', onWindowResize);
+    document.oncontextmenu=function(ev){
+        return false;    //屏蔽右键菜单
+     }
     animate();
 }
 
