@@ -19,10 +19,10 @@ function initRender() {
 function initSceen() {
     scene = new THREE.Scene();
     window["scene"]=scene;
-    // scene.fog = new THREE.Fog(0xa0a0a0, 200, 1000);
-    // scene.background = new THREE.CubeTextureLoader().setPath("https://cdn.jsdelivr.net/gh/ZoeLeee/cdn/sky/").load([
-    //     "lf.jpg", "rt.jpg", "up.jpg", "dn.jpg", "fr.jpg", "bk.jpg"
-    // ])
+    scene.fog = new THREE.Fog(0xa0a0a0, 200, 1000);
+    scene.background = new THREE.CubeTextureLoader().setPath("https://cdn.jsdelivr.net/gh/ZoeLeee/cdn/sky/").load([
+        "lf.jpg", "rt.jpg", "up.jpg", "dn.jpg", "fr.jpg", "bk.jpg"
+    ])
 }
 function initCamera() {
     //透视相机
