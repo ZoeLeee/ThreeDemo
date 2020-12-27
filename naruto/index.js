@@ -69,57 +69,82 @@ function loadModel() {
     scene.add(helper);
 
     // 地板
-    var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000), new THREE.MeshPhongMaterial({ color: 0xffffff, depthWrite: false }));
-    mesh.rotation.x = - Math.PI / 2;
-    mesh.receiveShadow = true;
-    scene.add(mesh);
+    // var mesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(2000, 2000), new THREE.MeshPhongMaterial({ color: 0xffffff, depthWrite: false }));
+    // mesh.rotation.x = - Math.PI / 2;
+    // mesh.receiveShadow = true;
+    // scene.add(mesh);
 
-    //添加地板割线
-    var grid = new THREE.GridHelper(2000, 20, 0x000000, 0x000000);
-    grid.material.opacity = 0.2;
-    grid.material.transparent = true;
-    scene.add(grid);
+    // //添加地板割线
+    // var grid = new THREE.GridHelper(2000, 20, 0x000000, 0x000000);
+    // grid.material.opacity = 0.2;
+    // grid.material.transparent = true;
+    // scene.add(grid);
 
+    //http://cdn.dodream.top/haha.obj
     // //加载模型
-    // var loader = new THREE.FBXLoader();
-    // loader.load("../assets/fbx/Naruto.fbx", function (mesh) {
-    //     //添加骨骼辅助
-    //     // meshHelper = new THREE.SkeletonHelper(mesh);
-    //     // scene.add(meshHelper);
+    var loader = new THREE.FBXLoader();
+    loader.load("../assets/fbx/Naruto.fbx", function (mesh) {
+        //添加骨骼辅助
+        // meshHelper = new THREE.SkeletonHelper(mesh);
+        // scene.add(meshHelper);
 
-    //     //设置模型的每个部位都可以投影
-    //     mesh.traverse(function (child) {
-    //         if (child.isMesh) {
-    //             child.castShadow = true;
-    //             child.receiveShadow = true;
-    //         }
-    //     });
+        //设置模型的每个部位都可以投影
+        mesh.traverse(function (child) {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+            }
+        });
 
-    //     //AnimationMixer是场景中特定对象的动画播放器。当场景中的多个对象独立动画时，可以为每个对象使用一个AnimationMixer
-    //     mixer = mesh.mixer = new THREE.AnimationMixer(mesh);
+        //AnimationMixer是场景中特定对象的动画播放器。当场景中的多个对象独立动画时，可以为每个对象使用一个AnimationMixer
+        mixer = mesh.mixer = new THREE.AnimationMixer(mesh);
 
-    //     //mixer.clipAction 返回一个可以控制动画的AnimationAction对象  参数需要一个AnimationClip 对象
-    //     //AnimationAction.setDuration 设置一个循环所需要的时间，当前设置了一秒
-    //     //告诉AnimationAction启动该动作
-    //     //action = mixer.clipAction(mesh.animations[0]);
-    //     //action.play();
+        //mixer.clipAction 返回一个可以控制动画的AnimationAction对象  参数需要一个AnimationClip 对象
+        //AnimationAction.setDuration 设置一个循环所需要的时间，当前设置了一秒
+        //告诉AnimationAction启动该动作
+        //action = mixer.clipAction(mesh.animations[0]);
+        //action.play();
 
-    //     var actions = []; //所有的动画数组
+        var actions = []; //所有的动画数组
 
-    //     for (var i = 0; i < mesh.animations.length; i++) {
-    //         createAction(i);
-    //     }
+        for (var i = 0; i < mesh.animations.length; i++) {
+            createAction(i);
+        }
 
-    //     function createAction(i) {
-    //         actions[i] = mixer.clipAction(mesh.animations[i]);
-    //         // action[i].play();
-    //     }
+        function createAction(i) {
+            actions[i] = mixer.clipAction(mesh.animations[i]);
+            // action[i].play();
+        }
 
-    //     mesh.position.y += 100;
+        mesh.position.y += 100;
 
-    //     scene.add(mesh);
-    // });
+        scene.add(mesh);
+    });
+    var loader = new THREE.OBJLoader();
 
+    // load a resource
+    loader.load(
+        // resource URL
+        '../assets/fbx/haha.obj',
+        // called when resource is loaded
+        function ( object ) {
+    
+            // scene.add( object );
+            console.log(object);
+        },
+        // called when loading is in progresses
+        function ( xhr ) {
+    
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+    
+        },
+        // called when loading has errors
+        function ( error ) {
+    
+            console.log( 'An error happened' );
+    
+        }
+    );
 }
 //窗口变动触发的函数
 function onWindowResize() {
