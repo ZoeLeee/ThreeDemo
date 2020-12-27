@@ -22,7 +22,7 @@
 <body>
     <div id='app'></div>
     <script src="http://cdn.dodream.top/three.js?key=joelee"></script>
-    <script src="http://cdn.dodream.top/OrbitControls.js?key=joelee"></script>
+    <script src="../../OrbitControls.js"></script>
     <script>
         let currentFullObject;
 
@@ -32,17 +32,15 @@
         const scene = new THREE.Scene();
         const FullScene = new THREE.Scene();
 
-        let CurrentScene = scene;
 
         const perspectiveCamera = new THREE.PerspectiveCamera(75, width / height, 0.01, 1100);
-        perspectiveCamera.lookAt(new THREE.Vector3(100));
 
         const orthographicCamera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 0, 10000);
         orthographicCamera.position.z = 500
 
 
         let currentCamera = orthographicCamera;
-
+        let CurrentScene = scene;
 
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
@@ -65,16 +63,13 @@
         const FUllObject = new THREE.Mesh(new THREE.SphereGeometry(1000, 100, 100), new THREE.MeshBasicMaterial({ side: THREE.BackSide }));
         FullScene.add(FUllObject);
 
-        const controls = new THREE.OrbitControls(perspectiveCamera, renderer.domElement);
-        controls.maxDistance = 1000
-        controls.minDistance = 1
-        // controls.enabled = false;
+        const controls = new OrbitControls(perspectiveCamera, renderer.domElement);
+        controls.enabled = false;
 
         const axesHelper = new THREE.AxesHelper(5000);
         scene.add(axesHelper);
 
         const mouse = { x: 0, y: 0 }
-
 
         function registerEvent() {
             raycaster = new THREE.Raycaster();
@@ -91,7 +86,6 @@
                         currentCamera = perspectiveCamera;
                         CurrentScene = FullScene;
                         controls.enabled = true;
-                        controls.update();
                         break;
                     }
                 }
@@ -104,7 +98,7 @@
                 if (code === 27) {
                     currentCamera = orthographicCamera;
                     CurrentScene = scene;
-                    perspectiveCamera.enabled = false;
+                    controls.enabled = true;
                     if (currentFullObject) {
                         currentFullObject = null;
                     }
@@ -123,8 +117,6 @@
                 mesh.rotation.y += 0.01;
                 mesh2.rotation.y += 0.01;
             }
-            // if (controls.enabled)
-            //     controls.update()
         }
         animate()
 
