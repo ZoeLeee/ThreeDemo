@@ -41,7 +41,7 @@ function start() {
     uniform mat4 ${UModelViewMatrix};
     uniform mat4 ${UProjectionMatrix};
     void main (){
-      gl_Position=${AVertexPosition};
+      gl_Position=${UProjectionMatrix}*${UModelViewMatrix}*${AVertexPosition};
       gl_PointSize=5.0;
     }
   `;
