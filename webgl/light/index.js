@@ -36,7 +36,7 @@ const vertices = [
     -1.0, 1.0, -1.0
 ];
 const colors = [
-    [1.0, 1.0, 1.0, 1.0],    // Front face: white
+    [0.4, 0.4, 0.4, 1.0],    // Front face: white
     [1.0, 0.0, 0.0, 1.0],    // Back face: red
     [0.0, 1.0, 0.0, 1.0],    // Top face: green
     [0.0, 0.0, 1.0, 1.0],    // Bottom face: blue
@@ -59,7 +59,7 @@ const VS_Shader = `
     
     void main(){
         gl_Position=uProjectionMatrix * uModelViewMatrix * a_position;
-        v_Color=vec4(1.0,0.0,0.0,1.0);
+        v_Color=a_Color;
 
         // Apply lighting effect
 
@@ -139,7 +139,7 @@ function main() {
 function update(gl, program, deltaTime) {
     // 设置清空颜色缓冲区时的颜色
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
-
+    gl.enable(gl.DEPTH_TEST);
     // 清空颜色缓冲区
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -177,7 +177,7 @@ function update(gl, program, deltaTime) {
     const modelViewMatrix = mat4.create();
     mat4.translate(modelViewMatrix,     // destination matrix
         modelViewMatrix,     // matrix to translate
-        [-0.0, 0.0, -5.0]);  // amount to translate
+        [-0.0, 0.0, -6.0]);  // amount to translate
 
     mat4.rotate(modelViewMatrix,  // destination matrix
         modelViewMatrix,  // matrix to rotate
@@ -231,7 +231,7 @@ function update(gl, program, deltaTime) {
     // 采用vertexAttribPointer进行传值
     gl.vertexAttribPointer(
         a_color,
-        4,
+        3,
         gl.FLOAT,
         false,
         Float32Array.BYTES_PER_ELEMENT * 4,
